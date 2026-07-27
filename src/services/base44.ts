@@ -58,10 +58,10 @@ export async function redirectToAbseLogin(
 
   const returnPath = getSafeReturnPath(requestedReturnPath, "/github-link");
 
-  // Google authentication is enabled in the Base44 project and works on the
-  // free/default Base44 OAuth configuration. Starting the provider directly
-  // avoids relying on the generic /login page that was failing to open.
-  base44.auth.loginWithProvider("google", returnPath);
+  // Base44's documented login entry point opens the hosted login page, where
+  // enabled providers such as Google and email/password are shown. The route
+  // guard already avoids rewriting Base44-owned /login and callback paths.
+  await Promise.resolve(base44.auth.redirectToLogin(returnPath));
 }
 
 export async function currentUser() {
