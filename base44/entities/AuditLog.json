@@ -1,0 +1,17 @@
+{
+  "name": "AuditLog",
+  "type": "object",
+  "title": "Audit Log",
+  "properties": {
+    "userId": { "type": "string" },
+    "action": { "type": "string" },
+    "entityType": { "type": "string" },
+    "entityId": { "type": "string" },
+    "correlationId": { "type": "string" },
+    "metadata": { "type": "object" },
+    "createdAt": { "type": "string", "format": "date-time" }
+  },
+  "required": ["action", "entityType", "entityId", "correlationId", "createdAt"],
+  "rls": { "create": false, "read": false, "update": false, "delete": false }
+}
+

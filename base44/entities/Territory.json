@@ -1,0 +1,20 @@
+{
+  "name": "Territory",
+  "type": "object",
+  "title": "Territory",
+  "properties": {
+    "key": { "type": "string" },
+    "name": { "type": "string" },
+    "ownerFactionId": { "type": "string" },
+    "attackInfluenceByFaction": { "type": "object", "additionalProperties": { "type": "number" } },
+    "defenceInfluence": { "type": "number", "minimum": 0 },
+    "activeModifier": { "type": "object" },
+    "stateVersion": { "type": "integer", "minimum": 1 },
+    "currentSeasonId": { "type": "string" },
+    "resolvesAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  },
+  "required": ["key", "name", "attackInfluenceByFaction", "defenceInfluence", "activeModifier", "stateVersion", "currentSeasonId", "resolvesAt", "updatedAt"],
+  "rls": { "create": false, "read": true, "update": false, "delete": false }
+}
+

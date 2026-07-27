@@ -1,0 +1,16 @@
+{
+  "name": "ArtifactDefinition",
+  "type": "object",
+  "title": "Artifact Definition",
+  "properties": {
+    "key": { "type": "string" },
+    "name": { "type": "string" },
+    "rarity": { "type": "string" },
+    "effectConfig": { "type": "object" },
+    "enabled": { "type": "boolean" },
+    "version": { "type": "string" }
+  },
+  "required": ["key", "name", "rarity", "effectConfig", "enabled", "version"],
+  "rls": { "create": false, "read": true, "update": false, "delete": false }
+}
+

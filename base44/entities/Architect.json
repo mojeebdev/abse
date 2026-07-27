@@ -1,0 +1,32 @@
+{
+  "name": "Architect",
+  "type": "object",
+  "title": "Architect",
+  "properties": {
+    "userId": { "type": "string" },
+    "scoreCalculationId": { "type": "string" },
+    "level": { "type": "integer", "minimum": 1 },
+    "experience": { "type": "integer", "minimum": 0 },
+    "powerBand": { "type": "string" },
+    "force": { "type": "integer", "minimum": 0 },
+    "guard": { "type": "integer", "minimum": 0 },
+    "momentum": { "type": "integer", "minimum": 0 },
+    "precision": { "type": "integer", "minimum": 0 },
+    "insight": { "type": "integer", "minimum": 0 },
+    "primaryAffinity": { "type": "string" },
+    "secondaryAffinities": { "type": "array", "items": { "type": "string" } },
+    "activeAbilityIds": { "type": "array", "items": { "type": "string" }, "maxItems": 3 },
+    "passiveTraitIds": { "type": "array", "items": { "type": "string" }, "maxItems": 2 },
+    "artifactId": { "type": "string" },
+    "buildVersion": { "type": "integer", "minimum": 1 },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  },
+  "required": ["userId", "scoreCalculationId", "level", "experience", "force", "guard", "momentum", "precision", "insight", "buildVersion", "updatedAt"],
+  "rls": {
+    "create": false,
+    "read": { "data.userId": "{{user.id}}" },
+    "update": false,
+    "delete": false
+  }
+}
+

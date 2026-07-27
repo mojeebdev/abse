@@ -1,0 +1,10 @@
+{
+  "name": "abse",
+  "description": "GitHub-powered strategy dungeon crawler",
+  "entitiesDir": "./entities",
+  "functionsDir": "./functions-deploy",
+  "authDir": "./auth",
+  "site": {
+    "outputDirectory": "./dist"
+  }
+}

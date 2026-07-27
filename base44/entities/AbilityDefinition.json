@@ -1,0 +1,19 @@
+{
+  "name": "AbilityDefinition",
+  "type": "object",
+  "title": "Ability Definition",
+  "properties": {
+    "key": { "type": "string" },
+    "name": { "type": "string" },
+    "affinity": { "type": "string" },
+    "energyCost": { "type": "integer", "minimum": 0 },
+    "cooldownTurns": { "type": "integer", "minimum": 0 },
+    "targetingType": { "type": "string" },
+    "effectConfig": { "type": "object" },
+    "enabled": { "type": "boolean" },
+    "version": { "type": "string" }
+  },
+  "required": ["key", "name", "affinity", "energyCost", "cooldownTurns", "effectConfig", "enabled", "version"],
+  "rls": { "create": false, "read": true, "update": false, "delete": false }
+}
+

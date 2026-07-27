@@ -1,0 +1,23 @@
+{
+  "name": "InfluenceLedger",
+  "type": "object",
+  "title": "Influence Ledger",
+  "properties": {
+    "userId": { "type": "string" },
+    "factionId": { "type": "string" },
+    "territoryId": { "type": "string" },
+    "dungeonRunId": { "type": "string" },
+    "amount": { "type": "number", "minimum": 1 },
+    "actionType": { "type": "string", "enum": ["attack", "defend", "raid"] },
+    "idempotencyKey": { "type": "string" },
+    "committedAt": { "type": "string", "format": "date-time" }
+  },
+  "required": ["userId", "factionId", "territoryId", "dungeonRunId", "amount", "actionType", "idempotencyKey", "committedAt"],
+  "rls": {
+    "create": false,
+    "read": { "data.userId": "{{user.id}}" },
+    "update": false,
+    "delete": false
+  }
+}
+

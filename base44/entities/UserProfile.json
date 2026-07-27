@@ -1,0 +1,24 @@
+{
+  "name": "UserProfile",
+  "type": "object",
+  "title": "User Profile",
+  "properties": {
+    "userId": { "type": "string" },
+    "githubLogin": { "type": "string" },
+    "githubUserId": { "type": "string" },
+    "githubAvatarUrl": { "type": "string", "format": "uri" },
+    "onboardingStatus": { "type": "string", "enum": ["account", "github_pending", "syncing", "profile_ready", "architect_ready"] },
+    "factionId": { "type": "string" },
+    "currentSeasonId": { "type": "string" },
+    "displayName": { "type": "string", "maxLength": 100 },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  },
+  "required": ["userId", "onboardingStatus", "createdAt", "updatedAt"],
+  "rls": {
+    "create": false,
+    "read": { "data.userId": "{{user.id}}" },
+    "update": false,
+    "delete": false
+  }
+}

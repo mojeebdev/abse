@@ -1,0 +1,17 @@
+{
+  "name": "SuspiciousActivityFlag",
+  "type": "object",
+  "title": "Suspicious Activity Flag",
+  "properties": {
+    "userId": { "type": "string" },
+    "category": { "type": "string" },
+    "severity": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+    "evidence": { "type": "object" },
+    "status": { "type": "string", "enum": ["open", "reviewing", "resolved", "dismissed"] },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "reviewedAt": { "type": "string", "format": "date-time" }
+  },
+  "required": ["userId", "category", "severity", "evidence", "status", "createdAt"],
+  "rls": { "create": false, "read": false, "update": false, "delete": false }
+}
+

@@ -1,0 +1,23 @@
+{
+  "name": "RewardLedger",
+  "type": "object",
+  "title": "Reward Ledger",
+  "properties": {
+    "userId": { "type": "string" },
+    "sourceType": { "type": "string" },
+    "sourceId": { "type": "string" },
+    "rewardType": { "type": "string", "enum": ["experience", "seasonal_rating", "influence", "artifact", "cosmetic", "achievement"] },
+    "amount": { "type": "number", "minimum": 0 },
+    "metadata": { "type": "object" },
+    "idempotencyKey": { "type": "string" },
+    "issuedAt": { "type": "string", "format": "date-time" }
+  },
+  "required": ["userId", "sourceType", "sourceId", "rewardType", "amount", "idempotencyKey", "issuedAt"],
+  "rls": {
+    "create": false,
+    "read": { "data.userId": "{{user.id}}" },
+    "update": false,
+    "delete": false
+  }
+}
+

@@ -1,0 +1,32 @@
+{
+  "name": "ScoreCalculation",
+  "type": "object",
+  "title": "Score Calculation",
+  "properties": {
+    "userId": { "type": "string" },
+    "snapshotId": { "type": "string" },
+    "calculationVersion": { "type": "string" },
+    "formulaConfigId": { "type": "string" },
+    "forcePotential": { "type": "integer", "minimum": 0 },
+    "guardPotential": { "type": "integer", "minimum": 0 },
+    "momentumPotential": { "type": "integer", "minimum": 0 },
+    "precisionPotential": { "type": "integer", "minimum": 0 },
+    "insightPotential": { "type": "integer", "minimum": 0 },
+    "totalForgePoints": { "type": "integer", "minimum": 0 },
+    "primaryAffinity": { "type": "string" },
+    "secondaryAffinities": { "type": "array", "items": { "type": "string" } },
+    "normalizedMetrics": { "type": "object" },
+    "appliedCaps": { "type": "object" },
+    "explanation": { "type": "array", "items": { "type": "object" } },
+    "inputHash": { "type": "string" },
+    "calculatedAt": { "type": "string", "format": "date-time" }
+  },
+  "required": ["userId", "snapshotId", "calculationVersion", "totalForgePoints", "inputHash", "calculatedAt"],
+  "rls": {
+    "create": false,
+    "read": { "data.userId": "{{user.id}}" },
+    "update": false,
+    "delete": false
+  }
+}
+

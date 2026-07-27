@@ -1,0 +1,21 @@
+{
+  "name": "GitHubConnection",
+  "type": "object",
+  "title": "GitHub Connection",
+  "properties": {
+    "userId": { "type": "string" },
+    "provider": { "type": "string", "enum": ["github"] },
+    "connectionStatus": { "type": "string", "enum": ["connected", "invalid", "disconnected"] },
+    "encryptedCredentialReference": {
+      "type": "string",
+      "rls": { "read": false, "write": false }
+    },
+    "grantedScopes": { "type": "array", "items": { "type": "string" } },
+    "connectedAt": { "type": "string", "format": "date-time" },
+    "disconnectedAt": { "type": "string", "format": "date-time" },
+    "lastValidatedAt": { "type": "string", "format": "date-time" }
+  },
+  "required": ["userId", "provider", "connectionStatus"],
+  "rls": { "create": false, "read": false, "update": false, "delete": false }
+}
+

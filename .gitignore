@@ -1,0 +1,10 @@
+node_modules/
+dist/
+coverage/
+.env
+.env.local
+.env.*.local
+base44/.app.jsonc
+.DS_Store
+*.log
+*.tsbuildinfo

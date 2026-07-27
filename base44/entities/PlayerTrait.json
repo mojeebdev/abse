@@ -1,0 +1,21 @@
+{
+  "name": "PlayerTrait",
+  "type": "object",
+  "title": "Player Trait",
+  "properties": {
+    "userId": { "type": "string" },
+    "traitDefinitionId": { "type": "string" },
+    "snapshotId": { "type": "string" },
+    "evidence": { "type": "object" },
+    "unlockedAt": { "type": "string", "format": "date-time" },
+    "active": { "type": "boolean" }
+  },
+  "required": ["userId", "traitDefinitionId", "snapshotId", "evidence", "unlockedAt", "active"],
+  "rls": {
+    "create": false,
+    "read": { "data.userId": "{{user.id}}" },
+    "update": false,
+    "delete": false
+  }
+}
+

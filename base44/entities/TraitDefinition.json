@@ -1,0 +1,17 @@
+{
+  "name": "TraitDefinition",
+  "type": "object",
+  "title": "Trait Definition",
+  "properties": {
+    "key": { "type": "string" },
+    "name": { "type": "string" },
+    "description": { "type": "string" },
+    "rarity": { "type": "string" },
+    "criteriaVersion": { "type": "string" },
+    "combatEffectConfig": { "type": "object" },
+    "enabled": { "type": "boolean" }
+  },
+  "required": ["key", "name", "description", "criteriaVersion", "enabled"],
+  "rls": { "create": false, "read": true, "update": false, "delete": false }
+}
+

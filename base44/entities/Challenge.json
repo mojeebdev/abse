@@ -1,0 +1,20 @@
+{
+  "name": "Challenge",
+  "type": "object",
+  "title": "Challenge",
+  "properties": {
+    "challengerUserId": { "type": "string" },
+    "challengedUserId": { "type": "string" },
+    "shareCode": { "type": "string" },
+    "challengeType": { "type": "string", "enum": ["dungeon_score", "architect_compare"] },
+    "challengerSnapshot": { "type": "object" },
+    "status": { "type": "string", "enum": ["open", "accepted", "completed", "expired", "cancelled"] },
+    "expiresAt": { "type": "string", "format": "date-time" },
+    "acceptedAt": { "type": "string", "format": "date-time" },
+    "completedAt": { "type": "string", "format": "date-time" },
+    "result": { "type": "object" }
+  },
+  "required": ["challengerUserId", "shareCode", "challengeType", "challengerSnapshot", "status", "expiresAt"],
+  "rls": { "create": false, "read": false, "update": false, "delete": false }
+}
+

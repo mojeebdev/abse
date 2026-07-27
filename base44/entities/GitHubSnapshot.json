@@ -1,0 +1,43 @@
+{
+  "name": "GitHubSnapshot",
+  "type": "object",
+  "title": "Immutable GitHub Snapshot",
+  "properties": {
+    "userId": { "type": "string" },
+    "capturedAt": { "type": "string", "format": "date-time" },
+    "accountCreatedAt": { "type": "string", "format": "date-time" },
+    "accountAgeDays": { "type": "integer", "minimum": 0 },
+    "publicRepoCount": { "type": "integer", "minimum": 0 },
+    "meaningfulRepoCount": { "type": "integer", "minimum": 0 },
+    "totalVerifiedCommits": { "type": "integer", "minimum": 0 },
+    "recentVerifiedCommits": { "type": "integer", "minimum": 0 },
+    "currentStreakDays": { "type": "integer", "minimum": 0 },
+    "longestStreakDays": { "type": "integer", "minimum": 0 },
+    "activeWeeksLastYear": { "type": "integer", "minimum": 0 },
+    "consistencyScoreInput": { "type": "number", "minimum": 0 },
+    "pullRequestsOpened": { "type": "integer", "minimum": 0 },
+    "pullRequestsMerged": { "type": "integer", "minimum": 0 },
+    "externalPullRequestsMerged": { "type": "integer", "minimum": 0 },
+    "releasesCount": { "type": "integer", "minimum": 0 },
+    "maintainedRepoCount": { "type": "integer", "minimum": 0 },
+    "languageDistribution": { "type": "object", "additionalProperties": { "type": "number" } },
+    "rawMetricSummary": {
+      "type": "object",
+      "rls": {
+        "read": { "data.userId": "{{user.id}}" },
+        "write": false
+      }
+    },
+    "sourceVersion": { "type": "string" },
+    "snapshotHash": { "type": "string" },
+    "isCurrent": { "type": "boolean" }
+  },
+  "required": ["userId", "capturedAt", "snapshotHash", "sourceVersion", "isCurrent"],
+  "rls": {
+    "create": false,
+    "read": { "data.userId": "{{user.id}}" },
+    "update": false,
+    "delete": false
+  }
+}
+

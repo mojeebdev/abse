@@ -1,0 +1,40 @@
+{
+  "name": "DungeonRun",
+  "type": "object",
+  "title": "Dungeon Run",
+  "properties": {
+    "userId": { "type": "string" },
+    "dungeonDefinitionId": { "type": "string" },
+    "dungeonVersion": { "type": "string" },
+    "seed": { "type": "string", "rls": { "read": false, "write": false } },
+    "status": { "type": "string", "enum": ["active", "completed", "failed"] },
+    "currentRoomIndex": { "type": "integer", "minimum": 0 },
+    "currentTurn": { "type": "integer", "minimum": 1 },
+    "health": { "type": "integer", "minimum": 0 },
+    "maxHealth": { "type": "integer", "minimum": 1 },
+    "energy": { "type": "integer", "minimum": 0 },
+    "guardMeter": { "type": "integer", "minimum": 0 },
+    "momentumChain": { "type": "integer", "minimum": 0 },
+    "statusEffects": { "type": "array", "items": { "type": "object" } },
+    "statePayload": {
+      "type": "object",
+      "rls": {
+        "read": false,
+        "write": false
+      }
+    },
+    "buildSnapshot": { "type": "object" },
+    "calculationVersion": { "type": "string" },
+    "rewardStatus": { "type": "string", "enum": ["pending", "issued", "ineligible"] },
+    "startedAt": { "type": "string", "format": "date-time" },
+    "completedAt": { "type": "string", "format": "date-time" },
+    "lastActionAt": { "type": "string", "format": "date-time" }
+  },
+  "required": ["userId", "dungeonDefinitionId", "dungeonVersion", "seed", "status", "currentRoomIndex", "currentTurn", "health", "maxHealth", "energy", "buildSnapshot", "calculationVersion", "rewardStatus", "startedAt"],
+  "rls": {
+    "create": false,
+    "read": { "data.userId": "{{user.id}}" },
+    "update": false,
+    "delete": false
+  }
+}

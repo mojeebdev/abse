@@ -1,0 +1,21 @@
+{
+  "name": "PlayerArtifact",
+  "type": "object",
+  "title": "Player Artifact",
+  "properties": {
+    "userId": { "type": "string" },
+    "artifactDefinitionId": { "type": "string" },
+    "quantity": { "type": "integer", "minimum": 0 },
+    "acquiredAt": { "type": "string", "format": "date-time" },
+    "sourceType": { "type": "string" },
+    "sourceId": { "type": "string" }
+  },
+  "required": ["userId", "artifactDefinitionId", "quantity", "acquiredAt", "sourceType", "sourceId"],
+  "rls": {
+    "create": false,
+    "read": { "data.userId": "{{user.id}}" },
+    "update": false,
+    "delete": false
+  }
+}
+

@@ -1,0 +1,16 @@
+{
+  "name": "DungeonDefinition",
+  "type": "object",
+  "title": "Dungeon Definition",
+  "properties": {
+    "key": { "type": "string" },
+    "name": { "type": "string" },
+    "version": { "type": "string" },
+    "roomConfig": { "type": "array", "items": { "type": "object" } },
+    "rewardConfig": { "type": "object" },
+    "enabled": { "type": "boolean" }
+  },
+  "required": ["key", "name", "version", "roomConfig", "rewardConfig", "enabled"],
+  "rls": { "create": false, "read": true, "update": false, "delete": false }
+}
+

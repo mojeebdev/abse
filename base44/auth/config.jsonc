@@ -1,0 +1,12 @@
+{
+  "enableUsernamePassword": true,
+  "enableGoogleLogin": true,
+  "enableMicrosoftLogin": false,
+  "enableFacebookLogin": false,
+  "enableAppleLogin": false,
+  "enableSSOLogin": false,
+  "useWorkspaceSSO": false,
+  "ssoProviderName": "",
+  "googleOAuthMode": "default",
+  "googleOAuthClientId": null
+}

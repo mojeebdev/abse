@@ -1,0 +1,24 @@
+{
+  "name": "GitHubSyncJob",
+  "type": "object",
+  "title": "GitHub Sync Job",
+  "properties": {
+    "userId": { "type": "string" },
+    "status": { "type": "string", "enum": ["queued", "running", "completed", "failed"] },
+    "requestedAt": { "type": "string", "format": "date-time" },
+    "startedAt": { "type": "string", "format": "date-time" },
+    "completedAt": { "type": "string", "format": "date-time" },
+    "errorCode": { "type": "string" },
+    "rateLimitResetAt": { "type": "string", "format": "date-time" },
+    "lockExpiresAt": { "type": "string", "format": "date-time" },
+    "correlationId": { "type": "string" }
+  },
+  "required": ["userId", "status", "requestedAt", "correlationId"],
+  "rls": {
+    "create": false,
+    "read": { "data.userId": "{{user.id}}" },
+    "update": false,
+    "delete": false
+  }
+}
+

@@ -1,0 +1,18 @@
+{
+  "name": "LeaderboardEntry",
+  "type": "object",
+  "title": "Leaderboard Entry",
+  "properties": {
+    "userId": { "type": "string" },
+    "seasonId": { "type": "string" },
+    "category": { "type": "string", "enum": ["dungeon_score", "seasonal_rating", "faction_contribution", "rare_traits", "streak"] },
+    "score": { "type": "number" },
+    "rank": { "type": "integer", "minimum": 1 },
+    "sourceVersion": { "type": "string" },
+    "publicProfile": { "type": "object" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  },
+  "required": ["userId", "seasonId", "category", "score", "rank", "sourceVersion", "publicProfile", "updatedAt"],
+  "rls": { "create": false, "read": true, "update": false, "delete": false }
+}
+

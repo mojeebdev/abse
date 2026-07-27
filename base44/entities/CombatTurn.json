@@ -1,0 +1,27 @@
+{
+  "name": "CombatTurn",
+  "type": "object",
+  "title": "Combat Turn",
+  "properties": {
+    "userId": { "type": "string" },
+    "dungeonRunId": { "type": "string" },
+    "turnNumber": { "type": "integer", "minimum": 1 },
+    "idempotencyKey": { "type": "string" },
+    "playerAction": { "type": "object" },
+    "enemyAction": { "type": "object" },
+    "randomValues": { "type": "array", "items": { "type": "number" }, "rls": { "read": false, "write": false } },
+    "stateBeforeHash": { "type": "string" },
+    "stateAfter": { "type": "object" },
+    "stateAfterHash": { "type": "string" },
+    "combatLog": { "type": "array", "items": { "type": "string" } },
+    "resolvedAt": { "type": "string", "format": "date-time" }
+  },
+  "required": ["userId", "dungeonRunId", "turnNumber", "idempotencyKey", "playerAction", "stateBeforeHash", "stateAfter", "stateAfterHash", "combatLog", "resolvedAt"],
+  "rls": {
+    "create": false,
+    "read": { "data.userId": "{{user.id}}" },
+    "update": false,
+    "delete": false
+  }
+}
+

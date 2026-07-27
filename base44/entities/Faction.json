@@ -1,0 +1,16 @@
+{
+  "name": "Faction",
+  "type": "object",
+  "title": "Faction",
+  "properties": {
+    "key": { "type": "string" },
+    "name": { "type": "string" },
+    "primaryAffinity": { "type": "string" },
+    "totalInfluence": { "type": "number", "minimum": 0 },
+    "currentSeasonId": { "type": "string" },
+    "createdAt": { "type": "string", "format": "date-time" }
+  },
+  "required": ["key", "name", "primaryAffinity", "totalInfluence", "currentSeasonId", "createdAt"],
+  "rls": { "create": false, "read": true, "update": false, "delete": false }
+}
+
