@@ -37,13 +37,14 @@ import {
   initialDevelopmentBuild,
 } from "./fixtures/development";
 import {
-  connectGitHub,
   currentUser,
   hasBase44Project,
-  hasGitHubConnector,
+  importPublicGitHubProfile,
   invokeAbseFunction,
+  normalizeGitHubUsername,
   redirectToAbseLogin,
   trackAbseEvent,
+  validateGitHubUsername,
 } from "./services/base44";
 
 type View = "threshold" | "github" | "profile" | "builder" | "dungeon" | "progression" | "world" | "share" | "leaderboard";
@@ -213,7 +214,7 @@ function Threshold({ onEnter }: { onEnter: () => void }) {
             {busy ? "Opening forge…" : hasBase44Project ? "Sign in to Abse" : "Enter development forge"}
             <ArrowRight size={18} />
           </button>
-          <span className="safe-note"><Shield size={15} /> GitHub credentials stay server-side</span>
+          <span className="safe-note"><Shield size={15} /> Public GitHub profile data only</span>
         </div>
         {message && <p className="error-message" role="alert">{message}</p>}
       </div>
@@ -227,51 +228,53 @@ function Threshold({ onEnter }: { onEnter: () => void }) {
 }
 
 function GitHubOnboarding({ onComplete }: { onComplete: () => void }) {
-  const [status, setStatus] = useState<"idle" | "checking" | "connecting" | "syncing" | "ready" | "error">("checking");
+  const [status, setStatus] = useState<"idle" | "loading" | "ready" | "error">("loading");
+  const [username, setUsername] = useState("");
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    if (!hasBase44Project || !hasGitHubConnector) {
+    if (!hasBase44Project) {
       setStatus("idle");
+      setMessage("Base44 app authentication is not configured for this build.");
       return;
     }
     void invokeAbseFunction<{ status: string; lastSuccessfulSyncAt: string | null; errorCode: string | null }>(
       "getGitHubSyncStatus",
     ).then((result) => {
       if (result.lastSuccessfulSyncAt) setStatus("ready");
-      else {
-        setStatus(result.status === "running" ? "syncing" : "idle");
-        if (result.errorCode) setMessage(`Last sync stopped with ${result.errorCode}. Reconnect and try again.`);
-      }
+      else setStatus(result.status === "running" ? "loading" : "idle");
     }).catch(() => setStatus("idle"));
   }, []);
 
-  const beginConnection = async () => {
-    setStatus("connecting");
-    setMessage("");
-    try {
-      trackAbseEvent("github_connect_started");
-      await connectGitHub();
-    } catch {
+  const submit = async (event?: React.FormEvent<HTMLFormElement>) => {
+    event?.preventDefault();
+    const nextUsername = normalizeGitHubUsername(username);
+    if (!validateGitHubUsername(nextUsername)) {
       setStatus("error");
-      setMessage("GitHub authorization could not start. Check the app-user connector configuration.");
+      setMessage("Enter a GitHub username using letters, numbers, or hyphens.");
+      return;
     }
-  };
 
-  const sync = async () => {
-    setStatus("syncing");
+    setStatus("loading");
     setMessage("");
     try {
-      await invokeAbseFunction("syncGitHubProfile");
-      await invokeAbseFunction("calculateForgePoints");
-      trackAbseEvent("github_sync_completed");
-      setStatus("ready");
+      trackAbseEvent("github_import_started", { username: nextUsername });
+      const result = await importPublicGitHubProfile(nextUsername);
+      if (result.status === "ready") {
+        trackAbseEvent("github_import_completed", { username: nextUsername });
+        setStatus("ready");
+        setMessage(`Public profile ready for ${result.username}.`);
+        onComplete();
+      } else {
+        setStatus("error");
+        setMessage("Abse could not build a public forge profile from that GitHub username.");
+      }
     } catch (error) {
       const code = error instanceof Error ? error.message : "INTERNAL_ERROR";
       setStatus("error");
-      setMessage(code === "GITHUB_NOT_CONNECTED"
-        ? "Connect GitHub first, then return here and sync your history."
-        : `GitHub sync stopped with ${code}. Your last good snapshot was preserved.`);
+      setMessage(code === "USER_NOT_FOUND"
+        ? "That GitHub username could not be found publicly. Try another profile."
+        : `GitHub import stopped with ${code}.`);
     }
   };
 
@@ -279,18 +282,18 @@ function GitHubOnboarding({ onComplete }: { onComplete: () => void }) {
     <section className="page content-page github-onboarding">
       <header className="page-heading">
         <div>
-          <p className="eyebrow"><span>LINK / GITHUB</span> PERSONAL OAUTH CONNECTION</p>
-          <h1>Bring your history across</h1>
-          <p>Abse reads contribution evidence through your own GitHub authorization. Your token stays inside Base44.</p>
+          <p className="eyebrow"><span>LINK / GITHUB</span> PUBLIC PROFILE IMPORT</p>
+          <h1>Forge a public GitHub profile</h1>
+          <p>Abse analyzes public GitHub profile and repository information for the forge report.</p>
         </div>
         <Github className="heading-mark" size={58} />
       </header>
       <div className="connector-layout">
         <article className="panel connector-sequence">
           {[
-            ["01", "Sign in to Abse", "Your game account is already authenticated."],
-            ["02", "Authorize GitHub", "GitHub asks you to approve the configured read access."],
-            ["03", "Sync the forge", "The server creates an immutable, versioned history snapshot."],
+            ["01", "Sign in to Abse", "Your Base44 account is already authenticated."],
+            ["02", "Enter a GitHub username", "Use a public profile that can be validated by GitHub’s public API."],
+            ["03", "Open the forge", "Abse calculates a public forge profile and prepares the Architect."],
           ].map(([number, title, copy], index) => (
             <div className={index === 1 ? "connector-step active" : "connector-step"} key={number}>
               <i>{number}</i><span><strong>{title}</strong><small>{copy}</small></span>
@@ -300,20 +303,31 @@ function GitHubOnboarding({ onComplete }: { onComplete: () => void }) {
         </article>
         <article className="panel connector-control">
           <div className="connector-sigil"><Github size={38} /></div>
-          <span>APP USER CONNECTOR</span>
-          <h2>{hasGitHubConnector ? "Your GitHub, your evidence" : "Connector setup pending"}</h2>
-          <p>{hasGitHubConnector
-            ? "Authorize your personal account. After GitHub returns you to Abse, run the verified history sync."
-            : "The app owner must add the workspace connector ID before players can authorize GitHub."}</p>
-          <button className="primary-button" onClick={beginConnection} disabled={!hasGitHubConnector || status === "connecting" || status === "syncing"}>
-            <Github size={18} />{status === "connecting" ? "Opening GitHub…" : "Connect personal GitHub"}
-          </button>
-          <button className="secondary-button" onClick={sync} disabled={!hasGitHubConnector || status === "syncing"}>
-            <Activity size={18} />{status === "syncing" ? "Syncing verified history…" : "I connected — sync history"}
-          </button>
+          <span>PUBLIC GITHUB IMPORT</span>
+          <h2>Bring a public profile into the forge</h2>
+          <p>Abse currently analyzes public GitHub data only. Private repositories and private contributions are not accessed.</p>
+          <form onSubmit={submit} className="github-import-form">
+            <label className="github-username-field" htmlFor="github-username">
+              <span>GitHub username</span>
+              <input
+                id="github-username"
+                name="github-username"
+                type="text"
+                value={username}
+                onChange={(event) => setUsername(event.target.value)}
+                placeholder="e.g. mojeebdev"
+                autoComplete="username"
+                autoCapitalize="none"
+                spellCheck={false}
+              />
+            </label>
+            <button className="primary-button" type="submit" disabled={status === "loading"}>
+              <Github size={18} />{status === "loading" ? "Scanning public profile…" : "Forge public GitHub profile"}
+            </button>
+          </form>
           {status === "ready" && <button className="text-button" onClick={onComplete}>Open forge report <ArrowRight size={17} /></button>}
           {message && <p className="error-message" role="alert">{message}</p>}
-          <small><LockKeyhole size={14} /> Tokens are never returned to the browser or stored in Abse entities.</small>
+          <small><LockKeyhole size={14} /> Public profile data is validated against GitHub’s public API before it enters the forge.</small>
         </article>
       </div>
     </section>

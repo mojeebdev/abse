@@ -330,6 +330,7 @@ declare module '@base44/sdk' {
     "commitTerritoryInfluence": true;
     "getAdminAudit": true;
     "getGitHubSyncStatus": true;
+    "importPublicGitHubProfile": true;
     "getLeaderboard": true;
     "getPublicChallenge": true;
     "getWorldState": true;

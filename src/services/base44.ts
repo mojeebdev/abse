@@ -1,10 +1,9 @@
 import { createClient } from "@base44/sdk";
+import type { GitHubMetrics } from "../domain/types";
 
 const appId = import.meta.env.VITE_BASE44_APP_ID?.trim();
-const githubConnectorId = import.meta.env.VITE_BASE44_GITHUB_CONNECTOR_ID?.trim();
 
 export const hasBase44Project = Boolean(appId) && import.meta.env.MODE !== "test";
-export const hasGitHubConnector = Boolean(githubConnectorId);
 
 export const base44 = hasBase44Project && appId ? createClient({ appId }) : null;
 
@@ -70,43 +69,45 @@ export async function currentUser() {
   }
 }
 
-type ConnectorRedirectResult =
-  | string
-  | {
-      url?: unknown;
-      authorizationUrl?: unknown;
-      redirectUrl?: unknown;
-    };
-
-function getConnectorAuthorizationUrl(result: ConnectorRedirectResult): string | null {
-  if (typeof result === "string") return result;
-
-  const candidate = result.url ?? result.authorizationUrl ?? result.redirectUrl;
-  return typeof candidate === "string" ? candidate : null;
+export function normalizeGitHubUsername(rawValue: string): string {
+  return rawValue.trim().replace(/^@+/, "").trim();
 }
 
-export async function connectGitHub(): Promise<void> {
+export function validateGitHubUsername(rawValue: string): boolean {
+  const username = normalizeGitHubUsername(rawValue);
+  return /^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,38}[a-zA-Z0-9])?$/.test(username) && username.length >= 1 && username.length <= 39;
+}
+
+export interface PublicGitHubImportResult {
+  status: string;
+  username: string;
+  metrics: GitHubMetrics;
+  forgeProfile: {
+    calculationVersion: string;
+    totalForgePoints: number;
+    primaryAffinity: string;
+    secondaryAffinities: string[];
+    potentials: Record<string, number>;
+    explanation: Array<{
+      key: string;
+      label: string;
+      raw: number;
+      normalized: number;
+      cap: number;
+      points: number;
+    }>;
+    traits: Array<{
+      key: string;
+      name: string;
+      description: string;
+      evidence: string;
+    }>;
+  };
+}
+
+export async function importPublicGitHubProfile(username: string): Promise<PublicGitHubImportResult> {
   if (!base44) throw new Error("BASE44_NOT_CONFIGURED");
-  if (!githubConnectorId) throw new Error("GITHUB_CONNECTOR_NOT_CONFIGURED");
-
-  const user = await currentUser();
-  if (!user) throw new Error("AUTH_REQUIRED");
-
-  const result = (await base44.connectors.connectAppUser(
-    githubConnectorId,
-  )) as ConnectorRedirectResult;
-  const authorizationUrl = getConnectorAuthorizationUrl(result);
-
-  if (!authorizationUrl) {
-    throw new Error("INVALID_GITHUB_AUTHORIZATION_URL");
-  }
-
-  const parsedUrl = new URL(authorizationUrl, window.location.origin);
-  if (parsedUrl.protocol !== "https:" && parsedUrl.origin !== window.location.origin) {
-    throw new Error("INVALID_GITHUB_AUTHORIZATION_URL");
-  }
-
-  window.location.assign(parsedUrl.toString());
+  return invokeAbseFunction<PublicGitHubImportResult>("importPublicGitHubProfile", { username });
 }
 
 export async function invokeAbseFunction<TResponse>(

@@ -1,5 +1,22 @@
 import { describe, expect, it } from "vitest";
-import { getSafeReturnPath } from "./base44";
+import { getSafeReturnPath, normalizeGitHubUsername, validateGitHubUsername } from "./base44";
+
+describe("normalizeGitHubUsername", () => {
+  it("strips whitespace and leading @ symbols", () => {
+    expect(normalizeGitHubUsername("  @mojeebdev  ")).toBe("mojeebdev");
+  });
+
+  it("rejects invalid GitHub usernames", () => {
+    expect(validateGitHubUsername("mojeebdev/test")).toBe(false);
+    expect(validateGitHubUsername("-mojeebdev")).toBe(false);
+    expect(validateGitHubUsername("mojeebdev_")).toBe(false);
+  });
+
+  it("accepts standard GitHub usernames", () => {
+    expect(validateGitHubUsername("mojeebdev")).toBe(true);
+    expect(validateGitHubUsername("mojeeb-dev")).toBe(true);
+  });
+});
 
 describe("getSafeReturnPath", () => {
   it("rejects login redirect loops and returns the fallback", () => {
