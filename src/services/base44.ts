@@ -8,7 +8,16 @@ export const hasGitHubConnector = Boolean(githubConnectorId);
 
 export const base44 = hasBase44Project && appId ? createClient({ appId }) : null;
 
-export function getSafeReturnPath(rawValue: string | null | undefined, fallback = "/github-link"): string {
+const BLOCKED_RETURN_PATHS = [
+  "/login",
+  "/logout",
+  "/api/external-auth/callback",
+];
+
+export function getSafeReturnPath(
+  rawValue: string | null | undefined,
+  fallback = "/github-link",
+): string {
   if (!rawValue) return fallback;
 
   let value = rawValue;
@@ -25,15 +34,15 @@ export function getSafeReturnPath(rawValue: string | null | undefined, fallback 
       return fallback;
     }
 
-    const blockedPaths = [
-      "/login",
-      "/logout",
-      "/api/external-auth/callback",
-    ];
-
     if (
-      blockedPaths.some((path) => url.pathname === path || url.pathname.startsWith(`${path}/`))
+      BLOCKED_RETURN_PATHS.some(
+        (path) => url.pathname === path || url.pathname.startsWith(`${path}/`),
+      )
     ) {
+      return fallback;
+    }
+
+    if (url.searchParams.has("from_url")) {
       return fallback;
     }
 
@@ -43,13 +52,13 @@ export function getSafeReturnPath(rawValue: string | null | undefined, fallback 
   }
 }
 
-export async function redirectToAbseLogin(): Promise<void> {
+export async function redirectToAbseLogin(
+  requestedReturnPath = "/github-link",
+): Promise<void> {
   if (!base44) throw new Error("BASE44_NOT_CONFIGURED");
-  const returnPath = getSafeReturnPath(
-    `${window.location.pathname}${window.location.search}${window.location.hash}`,
-    "/github-link",
-  );
-  base44.auth.redirectToLogin(returnPath);
+
+  const returnPath = getSafeReturnPath(requestedReturnPath, "/github-link");
+  await Promise.resolve(base44.auth.redirectToLogin(returnPath));
 }
 
 export async function currentUser() {
@@ -61,10 +70,43 @@ export async function currentUser() {
   }
 }
 
+type ConnectorRedirectResult =
+  | string
+  | {
+      url?: unknown;
+      authorizationUrl?: unknown;
+      redirectUrl?: unknown;
+    };
+
+function getConnectorAuthorizationUrl(result: ConnectorRedirectResult): string | null {
+  if (typeof result === "string") return result;
+
+  const candidate = result.url ?? result.authorizationUrl ?? result.redirectUrl;
+  return typeof candidate === "string" ? candidate : null;
+}
+
 export async function connectGitHub(): Promise<void> {
-  if (!base44 || !githubConnectorId) throw new Error("GITHUB_CONNECTOR_NOT_CONFIGURED");
-  const redirectUrl = await base44.connectors.connectAppUser(githubConnectorId);
-  window.location.href = redirectUrl;
+  if (!base44) throw new Error("BASE44_NOT_CONFIGURED");
+  if (!githubConnectorId) throw new Error("GITHUB_CONNECTOR_NOT_CONFIGURED");
+
+  const user = await currentUser();
+  if (!user) throw new Error("AUTH_REQUIRED");
+
+  const result = (await base44.connectors.connectAppUser(
+    githubConnectorId,
+  )) as ConnectorRedirectResult;
+  const authorizationUrl = getConnectorAuthorizationUrl(result);
+
+  if (!authorizationUrl) {
+    throw new Error("INVALID_GITHUB_AUTHORIZATION_URL");
+  }
+
+  const parsedUrl = new URL(authorizationUrl, window.location.origin);
+  if (parsedUrl.protocol !== "https:" && parsedUrl.origin !== window.location.origin) {
+    throw new Error("INVALID_GITHUB_AUTHORIZATION_URL");
+  }
+
+  window.location.assign(parsedUrl.toString());
 }
 
 export async function invokeAbseFunction<TResponse>(
@@ -92,7 +134,10 @@ export async function invokeAbseFunctionWithHeaders<TResponse>(
   return data as TResponse;
 }
 
-export function trackAbseEvent(eventName: string, properties: Record<string, string | number | boolean> = {}): void {
+export function trackAbseEvent(
+  eventName: string,
+  properties: Record<string, string | number | boolean> = {},
+): void {
   if (!base44) return;
   void base44.analytics.track({ eventName, properties });
 }
