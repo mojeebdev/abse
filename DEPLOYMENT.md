@@ -6,7 +6,6 @@ Configure these in the Base44 production environment:
 
 ```env
 VITE_BASE44_APP_ID=6a65ec0044e35fe96bbb8013
-VITE_BASE44_GITHUB_CONNECTOR_ID=6a65f7f58dee83d5921c75ca
 ```
 
 These identifiers are public frontend configuration. Do not place the GitHub Client Secret, access tokens, or other credentials in any `VITE_*` variable.
