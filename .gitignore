@@ -1,10 +1,49 @@
+# Dependencies
 node_modules/
+
+# Build output and generated reports
 dist/
+build/
+out/
 coverage/
-.env
-.env.local
-.env.*.local
-base44/.app.jsonc
-.DS_Store
-*.log
+.vite/
+.cache/
+.tmp/
+tmp/
 *.tsbuildinfo
+*.log
+
+# Environment files and local secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.jks
+*.keystore
+*credentials*.json
+*service-account*.json
+
+# Base44 local state; keep source config and functions tracked
+base44/.app.jsonc
+base44/.local/
+.base44/
+
+# Local deployment/provider state
+.vercel/
+.netlify/
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Test and tooling caches
+.nyc_output/
+.playwright/
+test-results/
